@@ -3,16 +3,26 @@ const StarNotary = artifacts.require('StarNotary')
 contract('StarNotary', accounts => { 
 
     beforeEach(async function() { 
-        this.contract = await StarNotary.new({from: accounts[0]})
-    })
+        this.contract = await StarNotary.new({from: accounts[0]});
+    });
     
     describe('can create a star', () => { 
         it('can create a star and get its name', async function () { 
             
-            await this.contract.createStar('awesome star!', 1, {from: accounts[0]})
+            await this.contract.createStar('awesome star!', 1, "dec_121.874", "mag_245.978", "cent_123", "I love my wonderful star" ,{from: accounts[0]})
+            let output = await this.contract.tokenIdToStarInfo(1)
+            assert.deepEqual(output, ['awesome star!', 'I love my wonderful star', 'dec_121.874', 'mag_245.978', 'cent_123']);
+        });
 
-            assert.equal(await this.contract.tokenIdToStarInfo(1), 'awesome star!')
-        })
+        it('can NOT create two stars with same coordinates', async () => {
+
+            try {
+                await this.contract.createStar('awesome star!', 1, "dec_121.874", "mag_245.978", "cent_123", "I love my wonderful star" ,{from: accounts[0]})
+            } catch (error) {
+                console.log(error)
+                assert.ok(error instanceof Error);
+            }
+        });
     })
 
     describe('buying and selling stars', () => { 
@@ -24,7 +34,7 @@ contract('StarNotary', accounts => {
         let starPrice = web3.toWei(.01, "ether")
 
         beforeEach(async function () { 
-            await this.contract.createStar('awesome star!', starId, {from: user1})    
+            await this.contract.createStar('awesome star!', 1, "dec_121.874", "mag_245.978", "cent_123", "I love my wonderful star" ,{from: user1})
         })
 
         it('user1 can put up their star for sale', async function () { 
@@ -51,7 +61,7 @@ contract('StarNotary', accounts => {
                 const balanceAfterTransaction = web3.eth.getBalance(user2)
 
                 assert.equal(balanceBeforeTransaction.sub(balanceAfterTransaction), starPrice)
-            })
-        })
-    })
+            });
+        });
+    });
 })
