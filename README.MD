@@ -8,21 +8,21 @@ This project is written in [Solidity](https://solidity.readthedocs.io/en/v0.4.24
 
 ## Deployment
 
-This service has already been deployed on the [Rinkeby](https://rinkeby.etherscan.io/) Ethereum blockchain, the contract can be found with the following contract address or [here](https://rinkeby.etherscan.io/address/0xd9e8c1ae1cc6b588afc8381329a4c27961a7a557) on Etherscan:
+This service has already been deployed on the [Rinkeby](https://rinkeby.etherscan.io/) Ethereum blockchain, the contract can be found with the following contract address or [here](https://rinkeby.etherscan.io/address/0x054617Ba4CCaF4C249AFDb53737B9B3d90e8Fcb0) on Etherscan:
 
 ```
-0xd9e8c1ae1cc6b588afc8381329a4c27961a7a557
+0x054617Ba4CCaF4C249AFDb53737B9B3d90e8Fcb0
 ```
 The contract creation transaction has is:
 
 ```
-0x5e65e9052847857f9d0d14598d8e8c27b3babdf81ca357e670e339e064561a21
+0x3169957bd066310b8c045db203ebfea77de3f469e5313631cfaef7b4323ca881
 ```
 
 An star has been claimed with token ID `1`, and put up for sale. The star creation transaction hash is:
 
 ```
-0x7285bcd6dbd87d89fc4c1456c71e432e36e2583bd3590aa94b227c83b9002639
+0xa8edb0b26439e1794bbbb1d35be208e4092390f59246a8e2f8ff7b7247cd55c5
 ```
 The current owner of this star is:
 

@@ -48,9 +48,10 @@
             <label id="claim-response" class="warning"></label>
         </div>
 
+
         <h1>Star Lookup</h1>
 
-        
+
         <div class="row">
             <label class="bold">Star Name:</label>
             <input id="token-id" value="1">
@@ -62,7 +63,7 @@
 
 
         <div class="row">
-            <label class="bold">Star Name:</label>
+            <label class="bold">Token ID:</label>
             <label id="star-name">
         </div>
 
@@ -85,6 +86,29 @@
             <label class="bold">Star Story:</label>
             <label id="star-story">
         </div>
+        <div class="row">
+            <label class="bold">Is For Sale:</label>
+            <label id="is-for-sale">
+        </div>
+        <div class="row">
+            <label class="bold">Owner:</label>
+            <label id="star-owner">
+        </div>
+
+        <h1>Put up for sale</h1>
+        <div class="row">
+            <label class="bold">Token ID:</label>
+            <input id="token-id-for-sale" value="1">
+        </div>
+        <div class="row">
+            <label class="bold">Price:</label>
+            <input id="price" value="0.1">
+        </div>
+        <div class="row">
+            <label id="tx-id">
+        </div>
+
+        <button id="owner-button" onclick="SaleStarClicked()">Sale Star</button>
     </div>
 
     <script>
@@ -96,7 +120,7 @@
                     await ethereum.enable();
                     web3 = new Web3(web3.currentProvider) // what Metamask injected
                     // The default (top) wallet account from a list of test accounts 
-                    web3.eth.defaultAccount = web3.eth.accounts[0]; 
+                    web3.eth.defaultAccount = web3.eth.accounts[0];
                 } catch (error) {
                     console.log(error);
                 }
@@ -545,13 +569,70 @@
             ]
         );
         // Grab the contract at specified deployed address with the interface defined by the ABI
-        var starNotary = StarNotary.at('0xd9e8c1ae1cc6b588afc8381329a4c27961a7a557');
+        var starNotary = StarNotary.at('0x054617ba4ccaf4c249afdb53737b9b3d90e8fcb0');
+
+        function SaleStarClicked() {
+            let tokenID = parseInt(document.getElementById("token-id-for-sale").value, 16);
+            let priceETH = parseFloat(document.getElementById("price").value, 16);
+            let account = web3.eth.defaultAccount;
+            let price = web3.toWei(priceETH, "ether")
+            console.log(price)
+
+            starNotary.putStarUpForSale(tokenID, price, { from: account }, (error, result) => {
+                if (!error) {
+                    console.log(result)
+                    return;
+                }
+                else {
+                    console.log(error)
+                    return;
+                }
+            });
+        }
+
+        function showIsStarForSale(tokenID) {
+            starNotary.starsForSale(tokenID, (error, result) => {
+                if (!error) {
+                    if (parseInt(result) > 0)
+                        document.getElementById('is-for-sale').innerText = "Yes";
+                    else
+                    document.getElementById('is-for-sale').innerText = "No";
+                    return;
+                }
+                else {
+                    console.log(error)
+                    return;
+                }
+            })
+        }
+
+        function showOwner(tokenID) {
+            starNotary.ownerOf(tokenID, (error, result) => {
+                if (!error) {
+                    document.getElementById('star-owner').innerText = result;
+                    return;
+                }
+                else {
+                    console.log(error)
+                    return;
+                }
+            });
+        }
+
+        let events = starNotary.allEvents([]);
+        events.watch((error, event) => {
+            if (error) console.log(error)
+        });
 
         function lookupButtonClicked() {
             document.getElementById('lookup-response').innerText = ""
+            document.getElementById('star-owner').innerText = "";
+            document.getElementById('is-for-sale').innerText = "";
             let tokenID = parseInt(document.getElementById("token-id").value, 16);
+            showOwner(tokenID);
+            showIsStarForSale(tokenID);
             starNotary.tokenIdToStarInfo(tokenID, (error, result) => {
-                if(!error) {
+                if (!error) {
                     document.getElementById('star-name').innerText = result[0];
                     document.getElementById('star-dec').innerText = result[2];
                     document.getElementById('star-mag').innerText = result[3];
@@ -559,7 +640,7 @@
                     document.getElementById('star-story').innerText = result[1];
 
                     if (result[2] == "" && result[3] == "" && result[4] == "")
-                    document.getElementById('lookup-response').innerText = "Star does not exist for the given id";
+                        document.getElementById('lookup-response').innerText = "Star does not exist for the given id";
                 }
                 else {
                     console.log(error);
@@ -573,7 +654,6 @@
         function claimButtonClicked() {
             document.getElementById('claim-response').innerText = ""
             let account = web3.eth.defaultAccount;
-            console.log(account)
 
             let starName = document.getElementById("input-star-name").value;
             let starTokenId = document.getElementById("input-token-id").value;
@@ -582,9 +662,9 @@
             let starCent = document.getElementById("input-star-cent").value;
             let starStory = document.getElementById("input-star-story").value;
 
-            starNotary.createStar(starName, starTokenId, starDec, starMag, starCent, starStory, {from: account}, (error, result) => {
-                if(!error) {
-                    document.getElementById('claim-response').innerText = "result";
+            starNotary.createStar(starName, starTokenId, starDec, starMag, starCent, starStory, { from: account }, (error, result) => {
+                if (!error) {
+                    document.getElementById('claim-response').innerText = result;
                 }
                 else {
                     console.log(error);
